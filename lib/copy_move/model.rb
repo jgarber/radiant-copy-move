@@ -16,6 +16,7 @@ module CopyMove
     def move_under(parent)
       raise CircularHierarchy.new(self) if parent == self || parent.ancestors.include?(self)
       update_attributes!(:parent_id => parent.id)
+      assume_bottom_position
     end
 
     def copy_to(parent, status = nil)
@@ -23,6 +24,7 @@ module CopyMove
         self.parts.each do |part|
           new_page.parts << part.clone
         end
+        new_page.send :add_to_list_bottom
         new_page.status_id = status.blank? ? new_page.status_id : status
         new_page.save!
       end
